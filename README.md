@@ -1,6 +1,6 @@
 定时更新本机公网ip到aliyun dns解析
 
-### 编译
+# 编译
 
 工程基于`springboot 3.0`需要使用 `java17`才能运行，需要在`gradle.properties`中指定`JAVA_HOME`，或者删除该文件并在环境变量中配置正确的`JAVA_HOME`
 
