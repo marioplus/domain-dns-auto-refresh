@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "net.marioplus"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -18,6 +18,7 @@ configurations {
 }
 
 repositories {
+    maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public/") }
     mavenCentral()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
@@ -25,11 +26,19 @@ repositories {
 extra["springCloudVersion"] = "2022.0.0-M2"
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    implementation("com.aliyun", "tea-openapi", "0.2.2")
+    implementation("com.aliyun", "alidns20150109", "2.0.1")
 }
 
 dependencyManagement {

@@ -1,0 +1,27 @@
+server:
+  port: 18080
+dns:
+  cron: 0 * * * * ?
+  accounts:
+    - accessKeyId: xxx
+      accessKeySecret: xxxxx
+      endpoint: alidns.cn-shenzhen.aliyuncs.com
+      records:
+        - domainName: xxxx.net
+          RR: xx.xx
+          type: A
+        - domainName: xxxx.net
+          RR: xx.xx
+          type: AAAA
+logging:
+  file:
+    path: ./logs
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+
