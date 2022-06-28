@@ -8,10 +8,10 @@ data class DnsProperties(
     /**
      * 定时任务corn
      */
-    val corn: String,
+    val cron: String,
     /**
      * 账号信息
      */
-    val accounts: List<DnsAccount>?,
+    val accounts: List<DnsAccount>,
 )
 
