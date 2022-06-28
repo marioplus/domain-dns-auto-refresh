@@ -66,29 +66,24 @@ class AliDnsUtils {
          */
         fun queryDomainRecord(dnsAccount: DnsAccount, dnsRecord: DnsRecord)
                 : DescribeDomainRecordsResponseBody.DescribeDomainRecordsResponseBodyDomainRecordsRecord? {
-            DescribeDomainRecordsRequest()
+            val request = DescribeDomainRecordsRequest()
                 .setDomainName(dnsRecord.domainName)
                 .setRRKeyWord(dnsRecord.RR)
                 .setType(dnsRecord.type)
                 .setPageNumber(1)
-                .setPageSize(1)
-                .let { request ->
-                    try {
-                        val response = getClient(dnsAccount)
-                            .describeDomainRecords(request)
-                        return response.body.domainRecords.record
-                            ?.let { records ->
-                                if (records.size > 0) {
-                                    return records[0]
-                                }
-                                return null
-                            }
-                    } catch (e: Exception) {
-                        LOGGER.error("查询dns解析记录失败", e)
-                        LOGGER.error("dnsRecord: $dnsRecord")
-                        return null
-                    }
-                }
+                .setPageSize(10)
+
+            return try {
+                val response = getClient(dnsAccount)
+                    .describeDomainRecords(request)
+                // RR为模糊查询需要手动比较
+                val records = response.body.domainRecords.record
+                records.find { it.RR.equals(dnsRecord.RR) }
+            } catch (e: Exception) {
+                LOGGER.error("查询dns解析记录失败", e)
+                LOGGER.error("dnsRecord: $dnsRecord")
+                null
+            }
         }
 
         /**

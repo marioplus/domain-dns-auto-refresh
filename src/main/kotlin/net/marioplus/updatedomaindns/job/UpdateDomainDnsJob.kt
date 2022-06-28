@@ -21,7 +21,7 @@ class UpdateDomainDnsJob {
     @Scheduled(cron = "\${dns.cron}")
     fun doJob() {
         LOGGER.info("执行刷新dns解析记录定时任务,Counter: ${COUNTER.addAndGet(1L)}")
-        dnsProperties.accounts?.forEach { account ->
+        dnsProperties.accounts.forEach { account ->
             account.records.forEach { record ->
                 when (record.type) {
                     "A" -> ipApi.getIpv4()
