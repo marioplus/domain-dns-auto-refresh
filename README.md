@@ -57,7 +57,7 @@ dns:
         - domainName: xxxx.net
           # 主机记录
           RR: xx.xx
-          # 记录类型，只支持A/AAAA
+          # 记录类型，只支持A/AAAA，默认:A
           type: A
           # 缓存时间,默认600,十分钟
           TTL: 600

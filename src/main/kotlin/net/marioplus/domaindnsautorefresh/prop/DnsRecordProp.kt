@@ -7,12 +7,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue
  * @author marioplus
  */
 data class DnsRecordProp(
-
-    /**
-     * 记录id
-     */
-    val recordId: String?,
-
+    
     /**
      * 主机记录
      */
@@ -26,6 +21,7 @@ data class DnsRecordProp(
     /**
      * 记录类型
      */
+    @param:DefaultValue("A")
     val type: String,
 
     /**

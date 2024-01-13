@@ -1,8 +1,7 @@
 package net.marioplus.domaindnsautorefresh.prop
 
-import net.marioplus.domaindnsautorefresh.prop.DnsAccountProp
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.context.properties.bind.DefaultValue
 
 @ConfigurationProperties("net.marioplus.domain-dns-auto-refresh")
 data class ProjectProp(
@@ -10,6 +9,7 @@ data class ProjectProp(
     /**
      * 定时任务 corn
      */
+    @param:DefaultValue("0 * * * * ?")
     val cron: String,
 
     /**

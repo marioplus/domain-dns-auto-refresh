@@ -8,7 +8,6 @@ net.marioplus.domain-dns-auto-refresh:
       endpoint: alidns.cn-shenzhen.aliyuncs.com
       records:
         - domain-name: xxx.com
-          record-id: xxx
           RR: mc
           type: A
 
