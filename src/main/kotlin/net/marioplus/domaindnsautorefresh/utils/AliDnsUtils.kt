@@ -1,4 +1,4 @@
-package net.marioplus.updatedomaindns.utils
+package net.marioplus.domaindnsautorefresh.utils
 
 import com.aliyun.alidns20150109.Client
 import com.aliyun.alidns20150109.models.AddDomainRecordRequest
@@ -6,11 +6,10 @@ import com.aliyun.alidns20150109.models.DescribeDomainRecordsRequest
 import com.aliyun.alidns20150109.models.DescribeDomainRecordsResponseBody
 import com.aliyun.alidns20150109.models.UpdateDomainRecordRequest
 import com.aliyun.teaopenapi.models.Config
-import net.marioplus.updatedomaindns.config.dns.DnsAccount
-import net.marioplus.updatedomaindns.config.dns.DnsRecord
+import net.marioplus.domaindnsautorefresh.prop.DnsAccountProp
+import net.marioplus.domaindnsautorefresh.prop.DnsRecordProp
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.BeanUtils
 import java.util.concurrent.ConcurrentHashMap
 
 class AliDnsUtils {
@@ -22,7 +21,7 @@ class AliDnsUtils {
         /**
          * 构建 client
          */
-        private fun initClient(dnsAccount: DnsAccount): Client {
+        private fun initClient(dnsAccount: DnsAccountProp): Client {
             val config = Config()
                 .setAccessKeyId(dnsAccount.accessKeyId)
                 .setAccessKeySecret(dnsAccount.accessKeySecret)
@@ -33,7 +32,7 @@ class AliDnsUtils {
         /**
          * 获取 client
          */
-        private fun getClient(dnsAccount: DnsAccount): Client {
+        private fun getClient(dnsAccount: DnsAccountProp): Client {
             val key: String = "${dnsAccount.accessKeyId}:${dnsAccount.accessKeySecret}:${dnsAccount.endpoint}"
             val client = CLIENTS[key] ?: initClient(dnsAccount)
             CLIENTS[key] = client
@@ -43,13 +42,13 @@ class AliDnsUtils {
         /**
          * 创建域名解析记录
          */
-        fun createDomainRecord(dnsAccount: DnsAccount, dnsRecord: DnsRecord, value: String): Boolean {
+        fun createDomainRecord(dnsAccount: DnsAccountProp, dnsRecordProp: DnsRecordProp, value: String): Boolean {
             AddDomainRecordRequest()
-                .setDomainName(dnsRecord.domainName)
-                .setRR(dnsRecord.RR)
-                .setType(dnsRecord.type)
+                .setDomainName(dnsRecordProp.domainName)
+                .setRR(dnsRecordProp.RR)
+                .setType(dnsRecordProp.type)
                 .setValue(value)
-                .setTTL(dnsRecord.TTL)
+                .setTTL(dnsRecordProp.TTL)
                 .let {
                     try {
                         getClient(dnsAccount).addDomainRecord(it)
@@ -64,12 +63,12 @@ class AliDnsUtils {
         /**
          * 查询nds记录值
          */
-        fun queryDomainRecord(dnsAccount: DnsAccount, dnsRecord: DnsRecord)
+        fun queryDomainRecord(dnsAccount: DnsAccountProp, dnsRecordProp: DnsRecordProp)
                 : DescribeDomainRecordsResponseBody.DescribeDomainRecordsResponseBodyDomainRecordsRecord? {
             val request = DescribeDomainRecordsRequest()
-                .setDomainName(dnsRecord.domainName)
-                .setRRKeyWord(dnsRecord.RR)
-                .setType(dnsRecord.type)
+                .setDomainName(dnsRecordProp.domainName)
+                .setRRKeyWord(dnsRecordProp.RR)
+                .setType(dnsRecordProp.type)
                 .setPageNumber(1)
                 .setPageSize(10)
 
@@ -78,10 +77,10 @@ class AliDnsUtils {
                     .describeDomainRecords(request)
                 // RR为模糊查询需要手动比较
                 val records = response.body.domainRecords.record
-                records.find { it.RR.equals(dnsRecord.RR) }
+                records.find { it.RR.equals(dnsRecordProp.RR) }
             } catch (e: Exception) {
                 LOGGER.error("查询dns解析记录失败", e)
-                LOGGER.error("dnsRecord: $dnsRecord")
+                LOGGER.error("dnsRecord: $dnsRecordProp")
                 null
             }
         }
@@ -89,9 +88,9 @@ class AliDnsUtils {
         /**
          * 更新nds记录值
          */
-        fun updateDnsRecord(dnsAccount: DnsAccount, dnsRecord: DnsRecord, value: String): Boolean {
+        fun updateDnsRecord(dnsAccount: DnsAccountProp, dnsRecordProp: DnsRecordProp, value: String): Boolean {
 
-            val currRecord = queryDomainRecord(dnsAccount, dnsRecord)
+            val currRecord = queryDomainRecord(dnsAccount, dnsRecordProp)
                 ?.also {
                     LOGGER.info(
                         "查询到dns记录：[recordId={}, RR={}, domainName={}, type={}, TTL={}, value={}]",
@@ -104,7 +103,7 @@ class AliDnsUtils {
                     )
                 }
             // 没有记录需要创建
-                ?: return createDomainRecord(dnsAccount, dnsRecord, value)
+                ?: return createDomainRecord(dnsAccount, dnsRecordProp, value)
 
             // 记录值相同
             if (currRecord.value.equals(value)) {
@@ -115,17 +114,17 @@ class AliDnsUtils {
             // 更新
             UpdateDomainRecordRequest()
                 .setRecordId(currRecord.recordId)
-                .setRR(dnsRecord.RR)
-                .setType(dnsRecord.type)
-                .setTTL(dnsRecord.TTL)
+                .setRR(dnsRecordProp.RR)
+                .setType(dnsRecordProp.type)
+                .setTTL(dnsRecordProp.TTL)
                 .setValue(value)
                 .let {
                     try {
                         getClient(dnsAccount).updateDomainRecord(it)
-                        LOGGER.info("更新dns记录成功：${dnsRecord.RR}.${dnsRecord.domainName}: ${currRecord.value} -> $value")
+                        LOGGER.info("更新dns记录成功：${dnsRecordProp.RR}.${dnsRecordProp.domainName}: ${currRecord.value} -> $value")
                         return true
                     } catch (e: Exception) {
-                        LOGGER.error("更新dns记录失败, record: $dnsRecord", e)
+                        LOGGER.error("更新dns记录失败, record: $dnsRecordProp", e)
                         return false
                     }
                 }

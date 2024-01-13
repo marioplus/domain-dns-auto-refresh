@@ -1,4 +1,4 @@
-package net.marioplus.updatedomaindns.config.dns
+package net.marioplus.domaindnsautorefresh.prop
 
 import org.springframework.boot.context.properties.bind.DefaultValue
 
@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue
  * dns 解析记录
  * @author marioplus
  */
-data class DnsRecord(
+data class DnsRecordProp(
 
     /**
      * 记录id

@@ -1,11 +1,9 @@
-package net.marioplus.updatedomaindns.config.dns
+package net.marioplus.domaindnsautorefresh.prop
 
 /**
- * nds 账号
- *
- * @author marioplus
+ * dns 账号记录
  */
-data class DnsAccount(
+data class DnsAccountProp(
     /**
      * ak
      */
@@ -24,5 +22,5 @@ data class DnsAccount(
     /**
      * 解析记录
      */
-    val records: List<DnsRecord>
+    val records: List<DnsRecordProp>
 )
