@@ -43,25 +43,25 @@ curl -X POST localhost:18080/actuator/shutdown
 # web端口
 server:
   port: 18080
-dns:
+net.marioplus.domain-dns-auto-refresh:
   # 定时cron表达式，默认1分钟一次
   cron: 0 * * * * ?
   accounts:
       # 阿里云账号配置 https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord?params={}&tab=DEMO&lang=JAVA
-    - accessKeyId: xxx
-      accessKeySecret: xxxxx
+    - access-key-id: xxx
+      access-key-secret: xxxxx
       endpoint: alidns.cn-shenzhen.aliyuncs.com
       # 解析记录
       records:
           # 域名
-        - domainName: xxxx.net
+        - domain-name: xxxx.net
           # 主机记录
           RR: xx.xx
-          # 记录类型，只支持A/AAAA，默认:A
+          # 记录类型，只支持A/AAAA。默认:A
           type: A
-          # 缓存时间,默认600,十分钟
+          # 缓存时间。默认600,十分钟
           TTL: 600
-        - domainName: xxxx.net
+        - domain-name: xxxx.net
           RR: xx.xx
           type: AAAA
 ```
